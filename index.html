@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Контент-план — SoftKink & Desire</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sp-bg:#f0eae4;--sp-col:#e0d4cc;--sp-card:#faf7f4;--sp-accent:#8c6b5a;
+  --sp-border:#ddd0c8;--sp-head:#c9b5a5;--sp-text:#3a2e28;--sp-muted:#8c7a70;
+  --d-bg:#0e0e10;--d-col:#1a1a1f;--d-card:#141418;--d-accent:#c0392b;
+  --d-border:#28282e;--d-head:#1e1e24;--d-text:#e8e8ec;--d-muted:#666672;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:#f5f0eb;min-height:100vh;}
+
+/* NAV */
+.nav{display:flex;align-items:center;padding:0 24px;background:#1a1a1a;height:52px;position:sticky;top:0;z-index:200;}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:18px;color:#fff;font-weight:600;letter-spacing:.04em;margin-right:auto;}
+.tab-nav{display:flex;gap:2px;height:100%;align-items:center;}
+.tab-nav button{padding:6px 18px;font-family:'DM Sans',sans-serif;font-size:13px;border:none;background:transparent;color:#888;cursor:pointer;border-radius:var(--radius-sm);transition:all .2s;}
+.tab-nav button:hover{color:#fff;background:rgba(255,255,255,.07);}
+.tab-nav button.active-sp{color:#d4b896;background:rgba(212,184,150,.12);}
+.tab-nav button.active-d{color:#e07070;background:rgba(192,57,43,.12);}
+
+/* PROGRESS BAR */
+.progress-wrap{padding:12px 28px;display:flex;align-items:center;gap:16px;}
+.progress-label{font-size:12px;font-weight:500;white-space:nowrap;}
+.progress-sp .progress-label{color:var(--sp-accent);}
+.progress-d .progress-label{color:#e07070;}
+.progress-bar-bg{flex:1;height:4px;border-radius:2px;background:rgba(0,0,0,.08);}
+.progress-sp .progress-bar-bg{background:rgba(140,107,90,.18);}
+.progress-d .progress-bar-bg{background:rgba(255,255,255,.06);}
+.progress-bar-fill{height:100%;border-radius:2px;transition:width .4s ease;}
+.progress-sp .progress-bar-fill{background:var(--sp-accent);}
+.progress-d .progress-bar-fill{background:var(--d-accent);}
+.progress-count{font-size:12px;white-space:nowrap;}
+.progress-sp .progress-count{color:var(--sp-muted);}
+.progress-d .progress-count{color:var(--d-muted);}
+
+/* SHOP */
+.shop{display:none;min-height:calc(100vh - 52px);}
+.shop.visible{display:flex;flex-direction:column;}
+
+.shop-header-sp{background:linear-gradient(135deg,#c9b5a5,#ddd0c8);padding:20px 28px 16px;display:flex;align-items:baseline;gap:14px;}
+.shop-header-d{background:linear-gradient(135deg,#1e1014,#1a1a24);padding:20px 28px 16px;display:flex;align-items:baseline;gap:14px;border-bottom:1px solid #2a2a32;}
+.shop-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;}
+.shop-title-sp{color:#3a2e28;}
+.shop-title-d{color:#e8e8ec;}
+.shop-sub-sp{font-size:12px;color:#7a6a62;font-weight:300;}
+.shop-sub-d{font-size:12px;color:#555560;font-weight:300;}
+
+/* BOARD */
+.board{display:flex;gap:14px;padding:20px 20px 28px;overflow-x:auto;flex:1;align-items:flex-start;}
+.board::-webkit-scrollbar{height:5px;}
+.board-sp{background:var(--sp-bg);}
+.board-sp::-webkit-scrollbar-thumb{background:#c9b5a5;border-radius:3px;}
+.board-d{background:var(--d-bg);}
+.board-d::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+
+/* COLUMN */
+.col{flex:0 0 290px;border-radius:var(--radius);display:flex;flex-direction:column;max-height:calc(100vh - 200px);}
+.col-sp{background:var(--sp-col);}
+.col-d{background:var(--d-col);border:1px solid var(--d-border);}
+
+.col-header{padding:12px 14px 10px;display:flex;align-items:center;gap:8px;border-radius:var(--radius) var(--radius) 0 0;flex-shrink:0;}
+.col-header-sp{background:var(--sp-head);}
+.col-header-d{background:var(--d-head);border-bottom:1px solid var(--d-border);}
+.col-day{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;}
+.col-day-sp{color:var(--sp-accent);}
+.col-day-d{color:var(--d-muted);}
+.col-name{font-size:13px;font-weight:500;flex:1;}
+.col-name-sp{color:var(--sp-text);}
+.col-name-d{color:var(--d-text);}
+.col-done{font-size:10px;padding:2px 6px;border-radius:8px;}
+.col-done-sp{background:rgba(140,107,90,.15);color:var(--sp-accent);}
+.col-done-d{background:rgba(192,57,43,.15);color:#e07070;}
+
+.col-body{padding:8px 8px 10px;display:flex;flex-direction:column;gap:7px;overflow-y:auto;flex:1;}
+.col-body::-webkit-scrollbar{width:3px;}
+.col-body-sp::-webkit-scrollbar-thumb{background:#c9b5a5;border-radius:2px;}
+.col-body-d::-webkit-scrollbar-thumb{background:#333;border-radius:2px;}
+
+/* CARD */
+.card{border-radius:var(--radius-sm);padding:11px 12px;position:relative;transition:opacity .2s,transform .15s;}
+.card-sp{background:var(--sp-card);border:1px solid var(--sp-border);box-shadow:0 1px 3px rgba(60,40,30,.06);}
+.card-d{background:var(--d-card);border:1px solid var(--d-border);}
+.card:hover{transform:translateY(-1px);}
+.card-sp:hover{box-shadow:0 3px 10px rgba(60,40,30,.1);}
+.card-d:hover{box-shadow:0 3px 10px rgba(0,0,0,.4);}
+
+/* DONE STATE */
+.card.done{opacity:.5;}
+.card.done .card-title{text-decoration:line-through;}
+
+/* TAG */
+.card-tag{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;margin-bottom:5px;letter-spacing:.04em;}
+.tag-product-sp{background:#e8d5c4;color:#6b4a35;}
+.tag-edu-sp{background:#d4e8d4;color:#3a6b3a;}
+.tag-warm-sp{background:#e8d4e0;color:#6b3a5a;}
+.tag-meme-sp{background:#e8e4d4;color:#6b6035;}
+.tag-promo-sp{background:#d4e8e4;color:#2a6b5a;}
+.tag-product-d{background:#2a1414;color:#e07070;}
+.tag-edu-d{background:#1a1a2e;color:#8080d0;}
+.tag-poll-d{background:#1e1e1e;color:#999;}
+.tag-sexo-d{background:#2a1a14;color:#d09060;}
+.tag-promo-d{background:#2a1a10;color:#d08040;}
+
+.card-title{font-size:13px;font-weight:500;margin-bottom:4px;line-height:1.35;}
+.card-title-sp{color:var(--sp-text);}
+.card-title-d{color:var(--d-text);}
+
+.card-preview{font-size:11px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.card-preview-sp{color:var(--sp-muted);}
+.card-preview-d{color:var(--d-muted);}
+
+.card-price{display:inline-block;margin-top:6px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:3px;}
+.card-price-sp{background:#e8d5c4;color:var(--sp-accent);}
+.card-price-d{background:#2a1414;color:#e07070;}
+
+/* CARD ACTIONS */
+.card-actions{display:none;gap:4px;position:absolute;top:7px;right:7px;}
+.card:hover .card-actions{display:flex;}
+.card-btn{width:24px;height:24px;border-radius:4px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .15s;}
+.card-btn-sp{background:transparent;color:var(--sp-muted);}
+.card-btn-sp:hover{background:var(--sp-col);}
+.card-btn-d{background:transparent;color:var(--d-muted);}
+.card-btn-d:hover{background:#222;}
+
+/* DONE BADGE */
+.done-badge{position:absolute;top:7px;left:7px;font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px;display:none;}
+.card.done .done-badge{display:block;}
+.done-badge-sp{background:#d4e8d4;color:#3a6b3a;}
+.done-badge-d{background:#1a2a1a;color:#60a060;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.overlay.open{display:flex;}
+.modal{width:100%;max-width:560px;border-radius:var(--radius);padding:26px;max-height:90vh;overflow-y:auto;animation:mIn .18s ease;}
+@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:none}}
+.modal-sp{background:var(--sp-card);border:1px solid var(--sp-border);}
+.modal-d{background:#18181e;border:1px solid #30303a;}
+
+.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;}
+.modal-title-sp{color:var(--sp-text);}
+.modal-title-d{color:var(--d-text);}
+.modal-x{width:28px;height:28px;border-radius:5px;border:none;background:transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-x-sp{color:var(--sp-muted);}
+.modal-x-sp:hover{background:var(--sp-col);}
+.modal-x-d{color:var(--d-muted);}
+.modal-x-d:hover{background:#222;}
+
+.form-group{margin-bottom:13px;}
+.form-label{display:block;font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.form-label-sp{color:var(--sp-accent);}
+.form-label-d{color:#666672;}
+.form-row{display:flex;gap:10px;}
+.form-row .form-group{flex:1;}
+
+input[type=text].fi,select.fi,textarea.fi{
+  width:100%;padding:8px 11px;border-radius:var(--radius-sm);
+  font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .15s;
+}
+textarea.fi{resize:vertical;line-height:1.6;}
+input[type=text].fi-sp,select.fi-sp,textarea.fi-sp{background:#fff;border:1px solid var(--sp-border);color:var(--sp-text);}
+input[type=text].fi-sp:focus,select.fi-sp:focus,textarea.fi-sp:focus{border-color:var(--sp-accent);}
+input[type=text].fi-d,select.fi-d,textarea.fi-d{background:#0e0e12;border:1px solid #2a2a32;color:var(--d-text);}
+input[type=text].fi-d:focus,select.fi-d:focus,textarea.fi-d:focus{border-color:var(--d-accent);}
+
+/* TELEGRAM PREVIEW */
+.tg-preview-wrap{margin-top:14px;}
+.tg-preview-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;}
+.tg-preview-label-sp{color:var(--sp-muted);}
+.tg-preview-label-d{color:var(--d-muted);}
+.tg-preview{padding:13px 14px;border-radius:var(--radius-sm);font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-word;}
+.tg-preview-sp{background:var(--sp-bg);color:var(--sp-text);border:1px solid var(--sp-border);}
+.tg-preview-d{background:#0a0a0e;color:var(--d-text);border:1px solid var(--d-border);}
+
+.modal-btns{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;align-items:center;}
+.btn{padding:8px 18px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .15s;}
+.btn-cancel-sp{background:var(--sp-col);color:var(--sp-muted);}
+.btn-cancel-sp:hover{background:var(--sp-border);}
+.btn-cancel-d{background:#222;color:var(--d-muted);}
+.btn-cancel-d:hover{background:#2a2a32;}
+.btn-done-sp{background:#d4e8d4;color:#3a6b3a;margin-right:auto;}
+.btn-done-sp:hover{background:#c0d8c0;}
+.btn-done-d{background:#1a2a1a;color:#60a060;margin-right:auto;}
+.btn-done-d:hover{background:#1e321e;}
+.btn-save-sp{background:var(--sp-accent);color:#fff;}
+.btn-save-sp:hover{background:#7a5a49;}
+.btn-save-d{background:var(--d-accent);color:#fff;}
+.btn-save-d:hover{background:#a93226;}
+.btn-del-sp{background:#fde8e8;color:#c0392b;}
+.btn-del-sp:hover{background:#f7c1c1;}
+.btn-del-d{background:#2a1414;color:#e07070;}
+.btn-del-d:hover{background:#3a1818;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">Content Plan</div>
+  <div class="tab-nav">
+    <button id="btn-sp" class="active-sp" onclick="switchShop('sp')">🐱 SoftKink</button>
+    <button id="btn-d" onclick="switchShop('d')">🖤 Desire</button>
+  </div>
+</nav>
+
+<div id="shop-sp" class="shop visible">
+  <div class="shop-header-sp">
+    <div class="shop-title shop-title-sp">SoftKink</div>
+    <div class="shop-sub-sp">Лютик веде канал · Тепло, без сорому</div>
+  </div>
+  <div class="progress-wrap progress-sp">
+    <div class="progress-label">Виконано</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill-sp" style="width:0%"></div></div>
+    <div class="progress-count" id="prog-count-sp">0 / 0</div>
+  </div>
+  <div class="board board-sp" id="board-sp"></div>
+</div>
+
+<div id="shop-d" class="shop">
+  <div class="shop-header-d">
+    <div class="shop-title shop-title-d">Desire</div>
+    <div class="shop-sub-d">Mia · Преміум · Без пояснень</div>
+  </div>
+  <div class="progress-wrap progress-d">
+    <div class="progress-label">Виконано</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill-d" style="width:0%"></div></div>
+    <div class="progress-count" id="prog-count-d">0 / 0</div>
+  </div>
+  <div class="board board-d" id="board-d"></div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeOutside(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-top">
+      <div class="modal-title" id="m-title">Редагування</div>
+      <button class="modal-x" id="m-x" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-tag">Рубрика</label>
+      <select class="fi" id="f-tag"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-title">Заголовок</label>
+      <input type="text" class="fi" id="f-title" placeholder="Назва товару або теми">
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-body">Текст поста</label>
+      <textarea class="fi" id="f-body" rows="8"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" id="lbl-price">Ціна</label>
+        <input type="text" class="fi" id="f-price" placeholder="напр. 1 099 грн">
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="lbl-link">Посилання / бот</label>
+        <input type="text" class="fi" id="f-link" placeholder="ШІ-консультант">
+      </div>
+    </div>
+    <div class="tg-preview-wrap">
+      <div class="tg-preview-label" id="prev-label">Попередній перегляд</div>
+      <div class="tg-preview" id="tg-prev"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" id="m-done-btn" onclick="toggleDoneFromModal()">Відмітити як виконаний</button>
+      <button class="btn" id="m-del-btn" onclick="deleteCard()">Видалити</button>
+      <button class="btn" id="m-cancel-btn" onclick="closeModal()">Скасувати</button>
+      <button class="btn" id="m-save-btn" onclick="saveCard()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TAGS_SP = [
+  {v:'product',l:'Товар дня'},{v:'edu',l:'Від Лютика (освіта)'},
+  {v:'warm',l:'Теплий пост'},{v:'meme',l:'Мем для пар'},{v:'promo',l:'Акція'}
+];
+const TAGS_D = [
+  {v:'product',l:'Товар дня'},{v:'edu',l:'Desire знає'},
+  {v:'poll',l:'Провокація / голосування'},{v:'sexo',l:'ШІ-сексолог'},{v:'promo',l:'Акція'}
+];
+
+const TAG_CLASS = {
+  'product-sp':'tag-product-sp','edu-sp':'tag-edu-sp','warm-sp':'tag-warm-sp',
+  'meme-sp':'tag-meme-sp','promo-sp':'tag-promo-sp',
+  'product-d':'tag-product-d','edu-d':'tag-edu-d','poll-d':'tag-poll-d',
+  'sexo-d':'tag-sexo-d','promo-d':'tag-promo-d'
+};
+
+const RAW = {
+  sp:[
+    {day:'ПН · День 1',name:'Старт тижня',cards:[
+      {id:'sp-1-1',tag:'product',title:'Лубрикант pjur Basic Water 100мл',price:'459 грн',link:'ШІ-консультант',done:false,
+       body:`🐱 Лютик знайшов твій ідеальний старт.\n\n— водна основа, без запаху і кольору\n— підходить для будь-якого типу використання\n— сумісний з іграшками і презервативами\n— легко змивається, не залишає плям\n\nЦіна: 459 грн\n\n🤖 ШІ-консультант  👩 Менеджер`},
+      {id:'sp-1-2',tag:'edu',title:'Чому лубрикант — це must have, а не опція',price:'',link:'',done:false,
+       body:`Лютик трохи ніяковіє, але скаже прямо:\n\nНавіть якщо «все і так добре» — лубрикант робить добре ще кращим. Він зменшує дискомфорт, продовжує задоволення і дбає про тебе.\n\nПитань без відповіді немає. Питай у Лютика 💙`}
+    ]},
+    {day:'ВТ · День 2',name:'Мем + смаковий товар',cards:[
+      {id:'sp-2-1',tag:'meme',title:'Мем дня від Лютика',price:'',link:'',done:false,
+       body:`Партнер: «Спробуємо щось нове?»\nТи: «Ну-у... може»\n\nЛютик: вже обрав, вже доставляє 😸`},
+      {id:'sp-2-2',tag:'product',title:'Змазка Sensuva Strawberry 57мл',price:'589 грн',link:'ШІ-консультант',done:false,
+       body:`🍓 Пахне полуницею. Підходить для поцілунків.\n\n— смакова водна змазка\n— їстівний безпечний склад\n— м'яка текстура, легке ковзання\n— підходить для іграшок і презервативів\n\nЦіна: 589 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'СР · День 3',name:'Освіта + зігрівальний',cards:[
+      {id:'sp-3-1',tag:'edu',title:'Зігрівальний vs охолоджувальний — що обрати?',price:'',link:'',done:false,
+       body:`Лютик пояснює:\n\n🔥 Зігрівальний — ніжне тепло, ідеально для масажу. Відчуття уваги і турботи.\n\n❄️ Охолоджувальний — легке поколювання, контраст. Для тих хто любить новизну.\n\nОбидва безпечні. Обидва — варто спробувати.`},
+      {id:'sp-3-2',tag:'product',title:'Lubrix HOT GEL 100мл',price:'589 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик рекомендує на середу 🔥\n\n— зігрівальний гель для масажу і прелюдії\n— м'яке тепло без печіння\n— водна основа, легко змивається\n— 100мл вистачить надовго\n\nЦіна: 589 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'ЧТ · День 4',name:'Дискретний продукт',cards:[
+      {id:'sp-4-1',tag:'product',title:'Вібратор-помада IROHA STICK Grey',price:'1 099 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик знайшов щось геніальне 💄\n\n— виглядає як помада, лежить у косметичці\n— японський бренд IROHA (від Tenga)\n— м'який медичний силікон\n— тихий мотор — тихіший за телефон\n— водостійкий, USB-зарядка\n\nЦіна: 1 099 грн\n\n🤖 ШІ-консультант  👩 Менеджер`},
+      {id:'sp-4-2',tag:'edu',title:'Що таке дискретний вібратор і кому він потрібен',price:'',link:'',done:false,
+       body:`Лютик пояснює: дискретний ≠ слабкий.\n\nЦе — продуманий. Для тих хто живе з сусідами, в гуртожитку, або просто цінує особистий простір.\n\nДизайн як косметика. Шум — мінімальний. Задоволення — справжнє 💙`}
+    ]},
+    {day:'ПТ · День 5',name:'Для пар',cards:[
+      {id:'sp-5-1',tag:'product',title:'Satisfyer Pro 4 Couples',price:'2 099 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик рекомендує для п'ятниці — на двох 💑\n\n— вакуумна стимуляція + вібрація одночасно\n— форма для використання парою\n— 11 режимів тиску, 10 режимів вібрації\n— тихий, водостійкий, магнітна зарядка\n\nЦіна: 2 099 грн\n\n🤖 ШІ-консультант  👩 Менеджер`},
+      {id:'sp-5-2',tag:'warm',title:'Пост для пар: маленький крок до нового',price:'',link:'',done:false,
+       body:`Лютик спостерігав: пари часто хочуть спробувати щось нове, але не знають з чого почати.\n\nВідповідь — з малого.\nНовий лубрикант. Новий настрій. Нова п'ятниця.\n\nSecretPlace — місце де не страшно починати 💙`}
+    ]},
+    {day:'СБ · День 6',name:'Тепла субота + акція',cards:[
+      {id:'sp-6-1',tag:'warm',title:'Субота — день турботи про себе',price:'',link:'',done:false,
+       body:`Лютик нагадує:\n\nКожна покупка у SoftKink — це не тільки твоє задоволення.\n5% від суми замовлення йдуть у черкаський притулок «Друг» 🐾\n\nТи отримаєш СМС з точною кількістю днів їжі для котика чи собачки.\n\nБо турбота буває різною 💙`},
+      {id:'sp-6-2',tag:'promo',title:'Акція вихідного дня',price:'',link:'Менеджер',done:false,
+       body:`🎁 Лютик оголошує:\n\nПри замовленні від 1500 грн — безкоштовна доставка цього вихідного!\n\nПлюс у кожній посилці — авторський буклет від Лютика 💙\n\nПишіть менеджеру — все розкажемо.`}
+    ]},
+    {day:'НД · День 7',name:'Підсумок тижня',cards:[
+      {id:'sp-7-1',tag:'edu',title:'Топ-3 питання тижня від Лютика',price:'',link:'',done:false,
+       body:`Лютик відповідає на найчастіші питання:\n\n1. «З чого почати?» — з лубриканту. Завжди.\n2. «Боляче?» — якщо правильно підібрати — ні.\n3. «Як обрати перший вібратор?» — Лютик зробить окремий пост. Обіцяє 🐾\n\nНадсилайте питання — Лютик відповідає чесно 💙`},
+      {id:'sp-7-2',tag:'product',title:'IROHA STICK Grey — нагадування на неділю',price:'1 099 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик нагадує: IROHA STICK досі чекає 💙\n\n— виглядає як косметика\n— тихий, дискретний, водостійкий\n— медичний силікон, USB-зарядка\n\nНеділя — ідеальний день щоб побалувати себе.\n\nЦіна: 1 099 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]}
+  ],
+  d:[
+    {day:'ПН · День 1',name:'Womanizer Liberty',cards:[
+      {id:'d-1-1',tag:'product',title:'Womanizer Liberty Blue',price:'3 099 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Без контакту. Без компромісів.\n\n— технологія Pleasure Air: хвилі без прямого дотику\n— 6 інтенсивностей\n— тихий — нижче 50 дБ\n— водостійкий, магнітна зарядка\n— преміальний гіпоалергенний силікон\n\nЦіна: 3 099 грн\n\n🤖 ШІ-консультант  👩 Менеджер`},
+      {id:'d-1-2',tag:'edu',title:'Pleasure Air — не вібрація. Пояснює Mia.',price:'',link:'',done:false,
+       body:`Стандартна вібрація торкається поверхні.\nPleasure Air — пульсує повітрям навколо, без тертя.\n\nРезультат стабільний. Ефект — інший рівень.\n\nWomanizer придумав це першим. Тепер ти знаєш.`}
+    ]},
+    {day:'ВТ · День 2',name:'Голосування + Satisfyer',cards:[
+      {id:'d-2-1',tag:'poll',title:'Голосування від Mia',price:'',link:'',done:false,
+       body:`Пряме питання.\n\nТи купуєш іграшки для себе або для двох?\n\n— Тільки для себе\n— Тільки разом\n— По-різному\n— Ще не купував(ла)\n\nБез осуду. Просто цікаво.`},
+      {id:'d-2-2',tag:'product',title:'Satisfyer Pro 3+ Vibration',price:'2 399 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Вакуум і вібрація одночасно.\n\n— 11 режимів тиску + 10 вібрацій\n— водостійкий IPX7\n— магнітна зарядка\n— матовий преміальний силікон\n\nБільше не треба вибирати.\n\nЦіна: 2 399 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'СР · День 3',name:'ШІ-сексолог + We-Vibe',cards:[
+      {id:'d-3-1',tag:'sexo',title:'ШІ-сексолог: запитання тижня',price:'',link:'ШІ-консультант',done:false,
+       body:`Анонімне запитання підписника:\n«Чи нормально, якщо мені більше подобається іграшка, ніж секс з партнером?»\n\nВідповідь:\nАбсолютно нормально. Іграшки дають стабільну стимуляцію без соціального тиску — це інший досвід, не замінник. Якщо турбує дисбаланс у парі — варто поговорити. Але сам факт переваги — просто перевага.\n\n→ Надіслати питання анонімно: бот у шапці`},
+      {id:'d-3-2',tag:'product',title:'We-Vibe Rave G-Spot',price:'5 599 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Смарт-вібратор. Керується з телефону. Навіть на відстані.\n\n— ергономічна форма для G-точки\n— 10 режимів, синхронізація з музикою\n— додаток We-Connect — партнер керує\n— IPX7 водостійкість\n\nЦіна: 5 599 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'ЧТ · День 4',name:'IROHA + освіта',cards:[
+      {id:'d-4-1',tag:'edu',title:'Чому японські бренди — інший рівень',price:'',link:'',done:false,
+       body:`IROHA — бренд від Tenga.\nЯпонці підійшли до дизайну як до мистецтва.\n\nМатеріали медичного класу. Форми — до міліметра. Мінімум шуму.\n\nДеякі речі просто зроблені краще.`},
+      {id:'d-4-2',tag:'product',title:'IROHA RIN Akane',price:'2 819 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 М'який кінчик. Глибока вібрація. Виглядає як арт-об'єкт.\n\n— унікальна форма з гнучким кінчиком\n— глибока вібрація по всій довжині\n— медичний силікон IROHA\n— водостійкий, від Tenga (Японія)\n\nЦіна: 2 819 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'ПТ · День 5',name:'Провокація + IROHA TEMARI',cards:[
+      {id:'d-5-1',tag:'poll',title:'П\'ятниця. Пряме питання від Mia.',price:'',link:'',done:false,
+       body:`Коли востаннє ти купував(ла) щось для себе — не для когось, не «нам», а саме собі?\n\nЯкщо давно — п'ятниця гарний день щоб виправити це.`},
+      {id:'d-5-2',tag:'product',title:'IROHA TEMARI',price:'4 999 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Виглядає як арт-об'єкт. Відчувається як ніщо інше.\n\n— кругла форма temari (японський декор)\n— рівномірна вібрація по всій поверхні\n— медичний силікон, водостійкий\n— колекційний дизайн IROHA\n\nЦіна: 4 999 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'СБ · День 6',name:'Набір для пар + акція',cards:[
+      {id:'d-6-1',tag:'promo',title:'Акція вихідного',price:'',link:'Менеджер',done:false,
+       body:`🖤 Тільки цих вихідних:\n\nПри замовленні від 3000 грн — пріоритетна відправка в день замовлення.\n\nDesire. Дискретне пакування. Без зайвих слів.`},
+      {id:'d-6-2',tag:'product',title:'Satisfyer Partner Box 2',price:'3 089 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Набір для двох. Смарт-вібратор + віброкільце.\n\n— два пристрої, одна мета\n— 10+ режимів для кожного\n— водостійкі, магнітна зарядка\n— для пар яким не треба пояснювати навіщо\n\nЦіна: 3 089 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'НД · День 7',name:'LELO Enigma + підсумок',cards:[
+      {id:'d-7-1',tag:'edu',title:'Що таке LELO Enigma і чому про це говорять',price:'',link:'',done:false,
+       body:`LELO Enigma — звуковий стимулятор подвійної дії.\n\nНе вібрація — SENSONIC хвилі. Проникають глибше. Охоплюють більше.\nКліторальна + вагінальна стимуляція одночасно.\n\nШведська інженерія. Без компромісів.`},
+      {id:'d-7-2',tag:'product',title:'LELO Enigma Black',price:'11 189 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Це те що тобі потрібно.\n\n— технологія SENSONIC: звукові хвилі, не вібрація\n— подвійна стимуляція: клітор + G-точка\n— 8 режимів, 2 мотори\n— повністю водостійкий\n— до 2 годин роботи\n\nЦіна: 11 189 грн\n\n🤖 ШІ-консультант  👩 Менеджер`}
+    ]}
+  ]
+};
+
+// ── STATE ──
+function loadState(shop) {
+  try {
+    const s = sessionStorage.getItem('cp_' + shop);
+    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(RAW[shop]));
+  } catch(e) { return JSON.parse(JSON.stringify(RAW[shop])); }
+}
+function saveState(shop) {
+  try { sessionStorage.setItem('cp_' + shop, JSON.stringify(state[shop])); } catch(e){}
+}
+const state = { sp: loadState('sp'), d: loadState('d') };
+
+let editInfo = null; // {shop, ci, ki}
+
+// ── TAG HELPERS ──
+function tagLabel(shop, tag) {
+  const t = (shop==='sp'?TAGS_SP:TAGS_D).find(x=>x.v===tag);
+  return t ? t.l : tag;
+}
+function tagCls(shop, tag) { return TAG_CLASS[tag+'-'+shop] || ''; }
+
+// ── RENDER ──
+function renderAll(shop) {
+  const el = document.getElementById('board-' + shop);
+  el.innerHTML = '';
+  state[shop].forEach((col, ci) => {
+    const colEl = document.createElement('div');
+    colEl.className = 'col col-' + shop;
+    const doneCount = col.cards.filter(c=>c.done).length;
+    colEl.innerHTML = `
+      <div class="col-header col-header-${shop}">
+        <span class="col-day col-day-${shop}">${col.day}</span>
+        <span class="col-name col-name-${shop}">${col.name}</span>
+        <span class="col-done col-done-${shop}">${doneCount}/${col.cards.length}</span>
+      </div>
+      <div class="col-body col-body-${shop}" id="cb-${shop}-${ci}"></div>
+      <button onclick="openNew('${shop}',${ci})" style="
+        margin:0 8px 8px;padding:7px 12px;border-radius:var(--radius-sm);font-size:11px;cursor:pointer;
+        font-family:'DM Sans',sans-serif;text-align:left;width:calc(100% - 16px);border:1px dashed;transition:background .15s;
+        ${shop==='sp'?'background:rgba(140,107,90,.08);color:var(--sp-muted);border-color:var(--sp-border);':'background:rgba(255,255,255,.03);color:var(--d-muted);border-color:#333;'}
+      ">+ Додати пост</button>`;
+    el.appendChild(colEl);
+
+    const body = document.getElementById('cb-'+shop+'-'+ci);
+    col.cards.forEach((card, ki) => {
+      const cardEl = document.createElement('div');
+      cardEl.className = `card card-${shop}${card.done?' done':''}`;
+      cardEl.innerHTML = `
+        <div class="done-badge done-badge-${shop}">✓ Опубліковано</div>
+        <div class="card-actions">
+          <button class="card-btn card-btn-${shop}" title="${card.done?'Скасувати':'Відмітити виконаним'}" onclick="quickDone('${shop}',${ci},${ki},event)">${card.done?'↩':'✓'}</button>
+          <button class="card-btn card-btn-${shop}" title="Редагувати" onclick="openEdit('${shop}',${ci},${ki},event)">✎</button>
+        </div>
+        <span class="card-tag ${tagCls(shop,card.tag)}">${tagLabel(shop,card.tag)}</span>
+        <div class="card-title card-title-${shop}">${card.title}</div>
+        <div class="card-preview card-preview-${shop}">${card.body.replace(/\n/g,' ')}</div>
+        ${card.price?`<span class="card-price card-price-${shop}">${card.price}</span>`:''}`;
+      cardEl.addEventListener('click', (e) => {
+        if (e.target.classList.contains('card-btn')) return;
+        openEdit(shop, ci, ki, e);
+      });
+      body.appendChild(cardEl);
+    });
+  });
+  updateProgress(shop);
+}
+
+function updateProgress(shop) {
+  const all = state[shop].flatMap(c=>c.cards);
+  const done = all.filter(c=>c.done).length;
+  const pct = all.length ? Math.round(done/all.length*100) : 0;
+  document.getElementById('prog-fill-'+shop).style.width = pct+'%';
+  document.getElementById('prog-count-'+shop).textContent = done+' / '+all.length;
+}
+
+// ── QUICK DONE ──
+function quickDone(shop, ci, ki, e) {
+  e.stopPropagation();
+  state[shop][ci].cards[ki].done = !state[shop][ci].cards[ki].done;
+  saveState(shop);
+  renderAll(shop);
+}
+
+// ── MODAL ──
+function applyTheme(shop) {
+  const box = document.getElementById('modal-box');
+  box.className = 'modal modal-' + shop;
+  ['m-title'].forEach(id => document.getElementById(id).className = 'modal-title modal-title-' + shop);
+  document.getElementById('m-x').className = 'modal-x modal-x-' + shop;
+  document.getElementById('prev-label').className = 'tg-preview-label tg-preview-label-' + shop;
+  document.getElementById('tg-prev').className = 'tg-preview tg-preview-' + shop;
+  ['f-tag','f-title','f-body','f-price','f-link'].forEach(id => {
+    const el = document.getElementById(id);
+    const base = el.tagName==='SELECT'?'form-select':el.tagName==='TEXTAREA'?'form-textarea':'form-input';
+    el.className = 'fi fi-' + shop;
+  });
+  ['lbl-tag','lbl-title','lbl-body','lbl-price','lbl-link'].forEach(id =>
+    document.getElementById(id).className = 'form-label form-label-' + shop);
+  document.getElementById('m-cancel-btn').className = 'btn btn-cancel-' + shop;
+  document.getElementById('m-save-btn').className = 'btn btn-save-' + shop;
+  document.getElementById('m-del-btn').className = 'btn btn-del-' + shop;
+  document.getElementById('m-done-btn').className = 'btn btn-done-' + shop;
+}
+
+function populateTags(shop, val) {
+  const sel = document.getElementById('f-tag');
+  sel.innerHTML = '';
+  (shop==='sp'?TAGS_SP:TAGS_D).forEach(t => {
+    const o = document.createElement('option');
+    o.value = t.v; o.textContent = t.l;
+    if (t.v === val) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+function updatePreview() {
+  const title = document.getElementById('f-title').value;
+  const body  = document.getElementById('f-body').value;
+  const price = document.getElementById('f-price').value;
+  const link  = document.getElementById('f-link').value;
+  let txt = '';
+  if (title) txt += title + '\n\n';
+  txt += body;
+  if (price) txt += '\n\nЦіна: ' + price;
+  if (link) txt += '\n\n🤖 ' + link + '  👩 Менеджер';
+  document.getElementById('tg-prev').textContent = txt;
+}
+
+['f-tag','f-title','f-price','f-link'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updatePreview));
+document.getElementById('f-body').addEventListener('input', updatePreview);
+
+function openEdit(shop, ci, ki, e) {
+  if (e) e.stopPropagation();
+  editInfo = {shop, ci, ki, isNew: false};
+  const card = state[shop][ci].cards[ki];
+  applyTheme(shop);
+  populateTags(shop, card.tag);
+  document.getElementById('m-title').textContent = 'Редагування поста';
+  document.getElementById('f-title').value = card.title;
+  document.getElementById('f-body').value = card.body;
+  document.getElementById('f-price').value = card.price || '';
+  document.getElementById('f-link').value = card.link || '';
+  const doneBtn = document.getElementById('m-done-btn');
+  doneBtn.textContent = card.done ? '↩ Скасувати виконання' : '✓ Відмітити як опублікований';
+  document.getElementById('m-del-btn').style.display = 'inline-flex';
+  updatePreview();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function openNew(shop, ci) {
+  editInfo = {shop, ci, ki: -1, isNew: true};
+  applyTheme(shop);
+  populateTags(shop, 'product');
+  document.getElementById('m-title').textContent = 'Новий пост';
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-body').value = '';
+  document.getElementById('f-price').value = '';
+  document.getElementById('f-link').value = 'ШІ-консультант';
+  document.getElementById('m-done-btn').textContent = '✓ Відмітити як опублікований';
+  document.getElementById('m-del-btn').style.display = 'none';
+  updatePreview();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  editInfo = null;
+}
+function closeOutside(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+function saveCard() {
+  if (!editInfo) return;
+  const {shop, ci, ki, isNew} = editInfo;
+  const card = {
+    id: isNew ? shop+'-new-'+Date.now() : state[shop][ci].cards[ki].id,
+    tag:   document.getElementById('f-tag').value,
+    title: document.getElementById('f-title').value,
+    body:  document.getElementById('f-body').value,
+    price: document.getElementById('f-price').value,
+    link:  document.getElementById('f-link').value,
+    done:  isNew ? false : state[shop][ci].cards[ki].done
+  };
+  if (isNew) state[shop][ci].cards.push(card);
+  else state[shop][ci].cards[ki] = card;
+  saveState(shop);
+  renderAll(shop);
+  closeModal();
+}
+
+function deleteCard() {
+  if (!editInfo || editInfo.isNew) return;
+  const {shop, ci, ki} = editInfo;
+  state[shop][ci].cards.splice(ki, 1);
+  saveState(shop);
+  renderAll(shop);
+  closeModal();
+}
+
+function toggleDoneFromModal() {
+  if (!editInfo) return;
+  const {shop, ci, ki, isNew} = editInfo;
+  if (isNew) return;
+  const card = state[shop][ci].cards[ki];
+  card.done = !card.done;
+  document.getElementById('m-done-btn').textContent =
+    card.done ? '↩ Скасувати виконання' : '✓ Відмітити як опублікований';
+  saveState(shop);
+  renderAll(shop);
+}
+
+// ── TABS ──
+let currentShop = 'sp';
+function switchShop(shop) {
+  currentShop = shop;
+  ['sp','d'].forEach(s => {
+    document.getElementById('shop-'+s).classList.toggle('visible', s===shop);
+    document.getElementById('btn-'+s).className = s===shop ? 'active-'+s : '';
+  });
+}
+
+// ── INIT ──
+renderAll('sp');
+renderAll('d');
+</script>
+</body>
+</html>
