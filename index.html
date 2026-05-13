@@ -202,7 +202,7 @@ input[type=text].fi-d:focus,select.fi-d:focus,textarea.fi-d:focus{border-color:v
 <body>
 
 <nav class="nav">
-  <div class="nav-logo">Content Plan</div>
+  <div class="nav-logo">Content Plan</div><span id="save-status" style="font-size:11px;margin-left:16px;transition:color .3s;"></span>
   <div class="tab-nav">
     <button id="btn-sp" class="active-sp" onclick="switchShop('sp')">🐱 SoftKink</button>
     <button id="btn-d" onclick="switchShop('d')">🖤 Desire</button>
@@ -278,6 +278,22 @@ input[type=text].fi-d:focus,select.fi-d:focus,textarea.fi-d:focus{border-color:v
 </div>
 
 <script>
+// ── PASSWORD PROTECTION ──
+(function() {
+  const PASS = 'desire2024';
+  const KEY = 'cp_auth';
+  if (sessionStorage.getItem(KEY) === '1') return;
+  document.body.style.display = 'none';
+  const entered = prompt('Введіть пароль для доступу:');
+  if (entered === PASS) {
+    sessionStorage.setItem(KEY, '1');
+    document.body.style.display = '';
+  } else {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0e0e10;color:#666;">Доступ заборонено</div>';
+    document.body.style.display = '';
+  }
+})();
+
 const TAGS_SP = [
   {v:'product',l:'Товар дня'},{v:'edu',l:'Від Лютика (освіта)'},
   {v:'warm',l:'Теплий пост'},{v:'meme',l:'Мем для пар'},{v:'promo',l:'Акція'}
@@ -386,16 +402,53 @@ const RAW = {
 };
 
 // ── STATE ──
-function loadState(shop) {
+// ── SERVER SAVE/LOAD ──
+const SAVE_URL = 'https://script.google.com/macros/s/AKfycbzczjC5VjyrcOYeb-C1oMXxrD5XP8J_v_q-uxu8mSGrfcDqVtLpzYt198DIGwACf3UR/exec';
+let saveTimer = null;
+
+async function loadFromServer() {
   try {
-    const s = sessionStorage.getItem('cp_' + shop);
-    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(RAW[shop]));
-  } catch(e) { return JSON.parse(JSON.stringify(RAW[shop])); }
+    const r = await fetch(SAVE_URL + '?t=' + Date.now());
+    const text = await r.text();
+    if (!text || text === 'null' || text === '') return null;
+    const data = JSON.parse(text);
+    if (data && data.sp && data.d) return data;
+  } catch(e) { console.log('Load error:', e); }
+  return null;
 }
+
 function saveState(shop) {
-  try { sessionStorage.setItem('cp_' + shop, JSON.stringify(state[shop])); } catch(e){}
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      showSaveIndicator('saving');
+      await fetch(SAVE_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(state)
+      });
+      showSaveIndicator('saved');
+    } catch(e) {
+      showSaveIndicator('error');
+    }
+  }, 600);
 }
-const state = { sp: loadState('sp'), d: loadState('d') };
+
+function showSaveIndicator(status) {
+  const el = document.getElementById('save-status');
+  if (!el) return;
+  const map = {
+    saving: ['⏳ Збереження...', '#888'],
+    saved:  ['✓ Збережено', '#3a6b3a'],
+    error:  ['✗ Помилка збереження', '#c0392b']
+  };
+  el.textContent = map[status][0];
+  el.style.color = map[status][1];
+  if (status === 'saved') setTimeout(() => { el.textContent = ''; }, 2500);
+}
+
+const state = { sp: JSON.parse(JSON.stringify(RAW.sp)), d: JSON.parse(JSON.stringify(RAW.d)) };
 
 let editInfo = null; // {shop, ci, ki}
 
@@ -609,8 +662,15 @@ function switchShop(shop) {
 }
 
 // ── INIT ──
-renderAll('sp');
-renderAll('d');
+(async () => {
+  const saved = await loadFromServer();
+  if (saved) {
+    state.sp = saved.sp;
+    state.d = saved.d;
+  }
+  renderAll('sp');
+  renderAll('d');
+})();
 </script>
 </body>
 </html>
