@@ -24,6 +24,13 @@ body{font-family:'DM Sans',sans-serif;background:#f5f0eb;min-height:100vh;}
 .tab-nav button:hover{color:#fff;background:rgba(255,255,255,.07);}
 .tab-nav button.active-sp{color:#d4b896;background:rgba(212,184,150,.12);}
 .tab-nav button.active-d{color:#e07070;background:rgba(192,57,43,.12);}
+.week-nav{display:flex;gap:6px;padding:10px 24px 0;background:#1a1a1a;}
+.week-btn{padding:4px 14px;font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid #333;background:transparent;color:#555;cursor:pointer;border-radius:var(--radius-sm);transition:all .2s;letter-spacing:.04em;}
+.week-btn:hover{color:#999;border-color:#555;}
+.week-btn.active{color:#d4b896;border-color:#d4b896;background:rgba(212,184,150,.08);}
+.tag-video-sp{background:#d4dff5;color:#1a3a7a;}
+.tag-video-d{background:#1a1428;color:#9070d0;}
+.tag-bdsm-d{background:#2a1020;color:#d070a0;}
 
 /* PROGRESS BAR */
 .progress-wrap{padding:12px 28px;display:flex;align-items:center;gap:16px;}
@@ -209,6 +216,11 @@ input[type=text].fi-d:focus,select.fi-d:focus,textarea.fi-d:focus{border-color:v
   </div>
 </nav>
 
+<div class="week-nav">
+  <button class="week-btn active" id="wbtn-1" onclick="switchWeek(1)">Тиждень 1</button>
+  <button class="week-btn" id="wbtn-2" onclick="switchWeek(2)">Тиждень 2</button>
+</div>
+
 <div id="shop-sp" class="shop visible">
   <div class="shop-header-sp">
     <div class="shop-title shop-title-sp">SoftKink</div>
@@ -278,21 +290,7 @@ input[type=text].fi-d:focus,select.fi-d:focus,textarea.fi-d:focus{border-color:v
 </div>
 
 <script>
-// ── PASSWORD PROTECTION ──
-(function() {
-  const PASS = 'desire2024';
-  const KEY = 'cp_auth';
-  if (sessionStorage.getItem(KEY) === '1') return;
-  document.body.style.display = 'none';
-  const entered = prompt('Введіть пароль для доступу:');
-  if (entered === PASS) {
-    sessionStorage.setItem(KEY, '1');
-    document.body.style.display = '';
-  } else {
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0e0e10;color:#666;">Доступ заборонено</div>';
-    document.body.style.display = '';
-  }
-})();
+
 
 const TAGS_SP = [
   {v:'product',l:'Товар дня'},{v:'edu',l:'Від Лютика (освіта)'},
@@ -401,18 +399,330 @@ const RAW = {
   ]
 };
 
+
+const RAW2 = {
+  sp:[
+    {day:'ПН · День 8',name:'Кружочок + лубрикант',cards:[
+      {id:'sp2-1-1',tag:'video',title:'Кружочок: Навіщо лубрикант — пояснює Ляка',price:'',link:'',done:false,
+       body:`🎥 Ляка знімає кружочок — 60 сек, живо, з телефону.
+
+Сценарій:
+«Дівчата, хочу розвіяти міф. Лубрикант — це не про те що щось не так. Це як зволожувальний крем — просто турбота про себе. Водна основа підходить для всього і з іграшками і з презервативами. Силіконова — довше тримається але не з іграшками. Починайте з водної — не помилитесь. Питання пишіть менеджеру!»
+
+Тон: живо, тепло, як порада від подруги.`},
+      {id:'sp2-1-2',tag:'product',title:'Лубрикант pjur Basic Water 100мл',price:'459 грн',link:'ШІ-консультант',done:false,
+       body:`🐱 Лютик підтверджує те що сказала Ляка.
+
+— водна основа, без запаху і кольору
+— підходить для іграшок і презервативів
+— легко змивається, не залишає плям
+— ідеальний старт для новачків
+
+Ціна: 459 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'ВТ · День 9',name:'Освіта + мем',cards:[
+      {id:'sp2-2-1',tag:'edu',title:'Як обрати перший вібратор: гайд від Лютика',price:'',link:'',done:false,
+       body:`Лютик нарешті зробив обіцяний пост!
+
+🔹 Розмір: починай з маленького — легше звикнути
+🔹 Матеріал: тільки медичний силікон — безпечно
+🔹 Шум: якщо є сусіди — дивись на рівень dB
+🔹 Форма: прямий простіше для початку
+🔹 Ціна: 800–1500 грн — оптимально для старту
+
+Питання? Лютик відповідає 💙`},
+      {id:'sp2-2-2',tag:'meme',title:'Мем: типове замовлення',price:'',link:'',done:false,
+       body:`Замовлення прийшло:
+📦 Пакунок дискретний ✓
+Відправник: «Інтернет-магазин» ✓
+Обличчя при отриманні: максимально нейтральне ✓
+
+Лютик знає це почуття 😸`}
+    ]},
+    {day:'СР · День 10',name:'Пари + Satisfyer',cards:[
+      {id:'sp2-3-1',tag:'warm',title:'5 ідей для вечора вдома — від Лютика',price:'',link:'',done:false,
+       body:`Лютик склав список:
+
+1. Масаж зі зігрівальним гелем — просто і тепло
+2. Спробувати нову змазку разом
+3. Ввімкнути музику і нічого не планувати
+4. Купити щось нове разом — і чекати доставки 😸
+5. Просто поговорити про те що подобається
+
+Маленькі кроки роблять велику різницю 💙`},
+      {id:'sp2-3-2',tag:'product',title:'Satisfyer Pro 4 Couples',price:'2 099 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик рекомендує для середи-вечора 💑
+
+— вакуумна стимуляція + вібрація для двох
+— 11 режимів тиску, 10 вібрацій
+— тихий, водостійкий, магнітна зарядка
+— форма продумана для пари
+
+Ціна: 2 099 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'ЧТ · День 11',name:'Новачкам',cards:[
+      {id:'sp2-4-1',tag:'edu',title:'3 речі які варто знати перед першою покупкою',price:'',link:'',done:false,
+       body:`Лютик для тих хто ще думає:
+
+1. Починай з малого і дешевого — зрозумієш що подобається
+2. Матеріал важливіший за форму — силікон завжди безпечний
+3. Тут не соромно питати — Лютик і менеджер без осуду
+
+Кожен починав з нуля. Навіть Лютик 💙`},
+      {id:'sp2-4-2',tag:'product',title:'Змазка Sensuva Watermelon 57мл',price:'589 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик знайшов смак літа взимку 🍉
+
+— смакова водна змазка з кавуном
+— їстівний безпечний склад
+— м'яка текстура, легке ковзання
+— підходить для іграшок і презервативів
+
+Ціна: 589 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'ПТ · День 12',name:'Кружочок 2 + IROHA',cards:[
+      {id:'sp2-5-1',tag:'video',title:'Кружочок: як вибрати першу іграшку',price:'',link:'',done:false,
+       body:`🎥 Ляка знімає кружочок — 60 сек.
+
+Сценарій:
+«Ок мене часто питають з чого почати. Моя відповідь — не дивіться на форму, дивіться на матеріал. Тільки медичний силікон — він безпечний і приємний. Розмір — маленький для старту. Шум — перевіряйте якщо є сусіди. От наприклад IROHA STICK — виглядає як помада, тихий як мишка і лежить в косметичці. Питайте менеджера — він підбере саме для вас!»
+
+Тон: жвавий, практичний, як порада подруги.`},
+      {id:'sp2-5-2',tag:'product',title:'IROHA STICK Grey',price:'1 099 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик теж у захваті 💄
+
+— вібратор у формі помади
+— японський бренд IROHA (Tenga)
+— тихий, водостійкий, USB
+— ніхто не здогадається
+
+Ціна: 1 099 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'СБ · День 13',name:'Акція + тепла субота',cards:[
+      {id:'sp2-6-1',tag:'promo',title:'Акція суботи від Лютика',price:'',link:'Менеджер',done:false,
+       body:`🎁 Лютик оголошує:
+
+При замовленні від 1000 грн — безкоштовна листівка від Лютика у посилці!
+
+А ще: 5% від кожного замовлення йде у притулок «Друг» 🐾
+Ти отримаєш СМС з кількістю днів їжі для тваринки.
+
+Пишіть менеджеру 💙`},
+      {id:'sp2-6-2',tag:'warm',title:'Субота — час для себе',price:'',link:'',done:false,
+       body:`Лютик думає:
+
+Скільки разів ти відкладав(ла) щось для себе «на потім»?
+
+Потім — це зараз.
+SecretPlace — місце де можна почати.
+Без сорому. Без поспіху. З турботою 💙`}
+    ]},
+    {day:'НД · День 14',name:'Питання підписників',cards:[
+      {id:'sp2-7-1',tag:'edu',title:'Лютик відповідає: найкращі питання тижня',price:'',link:'',done:false,
+       body:`Цього тижня найцікавіші питання:
+
+❓ «Чи можна лубрикант зі звичайними презервативами?»
+✅ Так — але тільки водна основа!
+
+❓ «IROHA STICK — шумний?»
+✅ Тихіший за телефон на вібро. Серйозно.
+
+❓ «Як дискретно отримати посилку?»
+✅ Відправник — «Інтернет-магазин». Жодних написів.
+
+Надсилайте питання — Лютик відповідає 💙`},
+      {id:'sp2-7-2',tag:'product',title:'Lubrix HOT GEL 100мл',price:'589 грн',link:'ШІ-консультант',done:false,
+       body:`Лютик для ніжної неділі 🔥
+
+— зігрівальний гель для масажу
+— м'яке тепло без печіння
+— 100мл, водна основа
+— ідеально після ванни
+
+Ціна: 589 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]}
+  ],
+  d:[
+    {day:'ПН · День 8',name:'LELO Enigma + освіта',cards:[
+      {id:'d2-1-1',tag:'product',title:'LELO Enigma Black',price:'11 189 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Це те що тобі потрібно.
+
+— технологія SENSONIC: хвилі, не вібрація
+— подвійна стимуляція: клітор + G-точка
+— 8 режимів, 2 мотори
+— повністю водостійкий, до 2 годин
+
+Ціна: 11 189 грн
+
+🤖 ШІ-консультант  👩 Менеджер`},
+      {id:'d2-1-2',tag:'edu',title:'SENSONIC vs вібрація — в чому різниця',price:'',link:'',done:false,
+       body:`Mia пояснює.
+
+Вібрація — механічний рух. Торкається поверхні.
+SENSONIC — звукові хвилі. Проникають глибше.
+
+Різниця як між масажем пальцями і ультразвуком.
+LELO запатентував це. Тільки топ-моделі.`}
+    ]},
+    {day:'ВТ · День 9',name:'Голосування + Womanizer',cards:[
+      {id:'d2-2-1',tag:'poll',title:'Провокація від Mia',price:'',link:'',done:false,
+       body:`Чесно.
+
+Скільки ти готова витратити на справді хорошу іграшку?
+
+— до 1000 грн
+— 1000–3000 грн
+— 3000–6000 грн
+— ціна не має значення якщо якість
+
+Mia знає свою відповідь.`},
+      {id:'d2-2-2',tag:'product',title:'Womanizer Liberty Blue',price:'3 099 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Без контакту. Без компромісів.
+
+— Pleasure Air: хвилі без тертя
+— 6 інтенсивностей
+— тихий — нижче 50 дБ
+— водостійкий, магнітна зарядка
+
+Ціна: 3 099 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'СР · День 10',name:'ШІ-сексолог + БДСМ пост',cards:[
+      {id:'d2-3-1',tag:'sexo',title:'ШІ-сексолог: як говорити з партнером про нове',price:'',link:'ШІ-консультант',done:false,
+       body:`Анонімне запитання:
+«Як поговорити з партнером про те що хочеш спробувати іграшки разом?»
+
+Відповідь:
+Починай не з розмови — з контексту. Покажи статтю або відео. Люди легше реагують на ідею ззовні ніж на прямий запит. Якщо партнер відмовляє — поважай, але скажи що це важливо для тебе. Відкрита розмова завжди краща за здогадки.
+
+→ Надіслати питання анонімно: бот у шапці`},
+      {id:'d2-3-2',tag:'bdsm',title:'БДСМ: з чого починають і що варто знати',price:'',link:'',done:false,
+       body:`🖤 Mia говорить прямо.
+
+БДСМ — не про біль. Про довіру і контроль.
+
+Основні правила:
+— Безпечне слово — обовʼязково. Завжди.
+— SSC: Safe, Sane, Consensual — безпечно, свідомо, за згодою
+— Починають з легкого: фіксація зап'ясть, пов'язка на очі
+— Обговорення до — важливіше ніж сам процес
+
+Бандаж, наручники, мотузки — це інструменти. Довіра — основа.
+
+Є питання? ШІ-сексолог анонімно 24/7 — бот у шапці.`}
+    ]},
+    {day:'ЧТ · День 11',name:'Бандаж + IROHA TEMARI',cards:[
+      {id:'d2-4-1',tag:'bdsm',title:'Бандаж для початківців: що купити першим',price:'',link:'ШІ-консультант',done:false,
+       body:`🖤 Якщо хочеш спробувати фіксацію — Mia підкаже з чого почати.
+
+Для старту:
+— Шовкові або атласні пов'язки — мʼякі, не залишають слідів
+— Спеціальні наручники на липучці — легко знімаються, безпечно
+— Уникай мотузок без досвіду — потрібно знати як вʼязати
+
+Головне правило: партнер може зупинити в будь-який момент.
+Безпечне слово — не обговорюється.
+
+Є в наявності — питайте менеджера.`},
+      {id:'d2-4-2',tag:'product',title:'IROHA TEMARI',price:'4 999 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Виглядає як декор. Відчувається як ніщо інше.
+
+— кругла форма temari
+— рівномірна вібрація по всій поверхні
+— медичний силікон, водостійкий
+— колекційний дизайн IROHA
+
+Ціна: 4 999 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'ПТ · День 12',name:'We-Vibe + провокація',cards:[
+      {id:'d2-5-1',tag:'poll',title:'Пʼятниця. Пряме питання від Mia.',price:'',link:'',done:false,
+       body:`Коли востаннє ти купував(ла) щось для себе — не для когось, не «нам», а саме собі?
+
+Якщо давно — пʼятниця гарний день щоб виправити це.`},
+      {id:'d2-5-2',tag:'product',title:'We-Vibe Rave G-Spot',price:'5 599 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Смарт-вібратор. Керується з телефону. Навіть на відстані.
+
+— форма для G-точки
+— 10 режимів + синхронізація з музикою
+— додаток We-Connect
+— IPX7 водостійкість
+
+Ціна: 5 599 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'СБ · День 13',name:'Акція + Satisfyer Marvelous',cards:[
+      {id:'d2-6-1',tag:'promo',title:'Акція вихідного від Desire',price:'',link:'Менеджер',done:false,
+       body:`🖤 Субота.
+
+При замовленні від 4000 грн — пріоритетна відправка в день замовлення.
+
+Desire. Дискретно. Без зайвих слів.`},
+      {id:'d2-6-2',tag:'product',title:'Satisfyer Marvelous Four',price:'4 119 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 Чотири іграшки. Один набір.
+
+— 4 пристрої Satisfyer в одній упаковці
+— вакуум, вібрація, масаж
+— водостійкі, медичний силікон
+— для тих хто хоче більше
+
+Ціна: 4 119 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]},
+    {day:'НД · День 14',name:'Підсумок тижня',cards:[
+      {id:'d2-7-1',tag:'edu',title:'Топ-3 бренди Desire і чому вони кращі',price:'',link:'',done:false,
+       body:`Mia обирає:
+
+🥇 LELO — шведська інженерія, звукові хвилі
+🥈 We-Vibe — смарт, керування з додатку, для пар
+🥉 Womanizer — винайшли Pleasure Air
+
+Всі три — Desire має в наявності.`},
+      {id:'d2-7-2',tag:'product',title:'IROHA RIN Akane',price:'2 819 грн',link:'ШІ-консультант',done:false,
+       body:`🖤 М'який кінчик. Японський мінімалізм.
+
+— унікальна форма з гнучким кінчиком
+— глибока вібрація
+— медичний силікон IROHA
+— водостійкий
+
+Ціна: 2 819 грн
+
+🤖 ШІ-консультант  👩 Менеджер`}
+    ]}
+  ]
+};
+
+
 // ── STATE ──
 // ── SERVER SAVE/LOAD ──
 const SAVE_URL = 'https://script.google.com/macros/s/AKfycbzczjC5VjyrcOYeb-C1oMXxrD5XP8J_v_q-uxu8mSGrfcDqVtLpzYt198DIGwACf3UR/exec';
 let saveTimer = null;
 
 async function loadFromServer() {
+  // Skip server load when opening locally
+  const isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if (isLocal) return null;
   try {
     const r = await fetch(SAVE_URL + '?t=' + Date.now());
     const text = await r.text();
     if (!text || text === 'null' || text === '') return null;
     const data = JSON.parse(text);
-    if (data && data.sp && data.d) return data;
+    if (data && data[1] && data[2]) return data;
+    if (data && data.sp && data.d) return {1: data, 2: {sp: JSON.parse(JSON.stringify(RAW2.sp)), d: JSON.parse(JSON.stringify(RAW2.d))}};
   } catch(e) { console.log('Load error:', e); }
   return null;
 }
@@ -422,12 +732,15 @@ function saveState(shop) {
   saveTimer = setTimeout(async () => {
     try {
       showSaveIndicator('saving');
-      await fetch(SAVE_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(state)
-      });
+      const isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (!isLocal) {
+        await fetch(SAVE_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(state)
+        });
+      }
       showSaveIndicator('saved');
     } catch(e) {
       showSaveIndicator('error');
@@ -463,7 +776,7 @@ function tagCls(shop, tag) { return TAG_CLASS[tag+'-'+shop] || ''; }
 function renderAll(shop) {
   const el = document.getElementById('board-' + shop);
   el.innerHTML = '';
-  state[shop].forEach((col, ci) => {
+  state[currentWeek][shop].forEach((col, ci) => {
     const colEl = document.createElement('div');
     colEl.className = 'col col-' + shop;
     const doneCount = col.cards.filter(c=>c.done).length;
@@ -494,7 +807,8 @@ function renderAll(shop) {
         <span class="card-tag ${tagCls(shop,card.tag)}">${tagLabel(shop,card.tag)}</span>
         <div class="card-title card-title-${shop}">${card.title}</div>
         <div class="card-preview card-preview-${shop}">${card.body.replace(/\n/g,' ')}</div>
-        ${card.price?`<span class="card-price card-price-${shop}">${card.price}</span>`:''}`;
+        ${card.price?`<span class="card-price card-price-${shop}">${card.price}</span>`:''}
+        ${card.tag==='video'?`<div style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:10px;margin-top:5px;background:${shop==='sp'?'#d4dff5':'#1a1428'};color:${shop==='sp'?'#1a3a7a':'#9070d0'}">▶ Кружочок для запису</div>`:''}`;
       cardEl.addEventListener('click', (e) => {
         if (e.target.classList.contains('card-btn')) return;
         openEdit(shop, ci, ki, e);
@@ -506,7 +820,7 @@ function renderAll(shop) {
 }
 
 function updateProgress(shop) {
-  const all = state[shop].flatMap(c=>c.cards);
+  const all = state[currentWeek][shop].flatMap(c=>c.cards);
   const done = all.filter(c=>c.done).length;
   const pct = all.length ? Math.round(done/all.length*100) : 0;
   document.getElementById('prog-fill-'+shop).style.width = pct+'%';
@@ -516,7 +830,7 @@ function updateProgress(shop) {
 // ── QUICK DONE ──
 function quickDone(shop, ci, ki, e) {
   e.stopPropagation();
-  state[shop][ci].cards[ki].done = !state[shop][ci].cards[ki].done;
+  state[currentWeek][shop][ci].cards[ki].done = !state[currentWeek][shop][ci].cards[ki].done;
   saveState(shop);
   renderAll(shop);
 }
@@ -566,14 +880,21 @@ function updatePreview() {
   document.getElementById('tg-prev').textContent = txt;
 }
 
-['f-tag','f-title','f-price','f-link'].forEach(id =>
-  document.getElementById(id).addEventListener('input', updatePreview));
-document.getElementById('f-body').addEventListener('input', updatePreview);
+function attachFieldListeners() {
+  ['f-tag','f-title','f-price','f-link'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updatePreview);
+  });
+  const fb = document.getElementById('f-body');
+  if (fb) fb.addEventListener('input', updatePreview);
+}
+document.addEventListener('DOMContentLoaded', attachFieldListeners);
+if (document.readyState !== 'loading') attachFieldListeners();
 
 function openEdit(shop, ci, ki, e) {
   if (e) e.stopPropagation();
   editInfo = {shop, ci, ki, isNew: false};
-  const card = state[shop][ci].cards[ki];
+  const card = state[currentWeek][shop][ci].cards[ki];
   applyTheme(shop);
   populateTags(shop, card.tag);
   document.getElementById('m-title').textContent = 'Редагування поста';
@@ -615,16 +936,16 @@ function saveCard() {
   if (!editInfo) return;
   const {shop, ci, ki, isNew} = editInfo;
   const card = {
-    id: isNew ? shop+'-new-'+Date.now() : state[shop][ci].cards[ki].id,
+    id: isNew ? shop+'-new-'+Date.now() : state[currentWeek][shop][ci].cards[ki].id,
     tag:   document.getElementById('f-tag').value,
     title: document.getElementById('f-title').value,
     body:  document.getElementById('f-body').value,
     price: document.getElementById('f-price').value,
     link:  document.getElementById('f-link').value,
-    done:  isNew ? false : state[shop][ci].cards[ki].done
+    done:  isNew ? false : state[currentWeek][shop][ci].cards[ki].done
   };
-  if (isNew) state[shop][ci].cards.push(card);
-  else state[shop][ci].cards[ki] = card;
+  if (isNew) state[currentWeek][shop][ci].cards.push(card);
+  else state[currentWeek][shop][ci].cards[ki] = card;
   saveState(shop);
   renderAll(shop);
   closeModal();
@@ -633,7 +954,7 @@ function saveCard() {
 function deleteCard() {
   if (!editInfo || editInfo.isNew) return;
   const {shop, ci, ki} = editInfo;
-  state[shop][ci].cards.splice(ki, 1);
+  state[currentWeek][shop][ci].cards.splice(ki, 1);
   saveState(shop);
   renderAll(shop);
   closeModal();
@@ -643,7 +964,7 @@ function toggleDoneFromModal() {
   if (!editInfo) return;
   const {shop, ci, ki, isNew} = editInfo;
   if (isNew) return;
-  const card = state[shop][ci].cards[ki];
+  const card = state[currentWeek][shop][ci].cards[ki];
   card.done = !card.done;
   document.getElementById('m-done-btn').textContent =
     card.done ? '↩ Скасувати виконання' : '✓ Відмітити як опублікований';
@@ -653,6 +974,18 @@ function toggleDoneFromModal() {
 
 // ── TABS ──
 let currentShop = 'sp';
+
+function switchWeek(week) {
+  currentWeek = week;
+  [1,2].forEach(w => {
+    document.getElementById('wbtn-'+w).classList.toggle('active', w===week);
+  });
+  renderAll('sp');
+  renderAll('d');
+  updateProgress('sp');
+  updateProgress('d');
+}
+
 function switchShop(shop) {
   currentShop = shop;
   ['sp','d'].forEach(s => {
@@ -662,15 +995,57 @@ function switchShop(shop) {
 }
 
 // ── INIT ──
-(async () => {
+async function initApp() {
   const saved = await loadFromServer();
   if (saved) {
-    state.sp = saved.sp;
-    state.d = saved.d;
+    if (saved[1]) { state[1].sp = saved[1].sp; state[1].d = saved[1].d; }
+    if (saved[2]) { state[2].sp = saved[2].sp; state[2].d = saved[2].d; }
   }
   renderAll('sp');
   renderAll('d');
-})();
-</script>
+}
+
+// ── PASSWORD PROTECTION ──
+(function() {
+  const PASS = 'desire2024';
+  const KEY = 'cp_auth';
+  const isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  // Skip password locally
+  if (isLocal || sessionStorage.getItem(KEY) === '1') {
+    document.addEventListener('DOMContentLoaded', () => initApp());
+    if (document.readyState !== 'loading') initApp();
+    return;
+  }
+  const screen = document.createElement('div');
+  screen.id = 'pass-screen';
+  screen.style.cssText = 'position:fixed;inset:0;background:#0e0e10;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:DM Sans,sans-serif;';
+  screen.innerHTML = `
+    <div style="text-align:center;padding:40px;">
+      <div style="font-family:Cormorant Garamond,serif;font-size:28px;color:#d4b896;margin-bottom:8px;letter-spacing:.1em;">CONTENT PLAN</div>
+      <div style="font-size:12px;color:#555;margin-bottom:32px;letter-spacing:.2em;text-transform:uppercase;">Введіть пароль</div>
+      <input id="pass-input" type="password" placeholder="••••••••"
+        style="background:#1a1a1a;border:1px solid #333;color:#e8e8ec;padding:12px 20px;border-radius:8px;font-size:14px;width:240px;outline:none;text-align:center;display:block;margin:0 auto 16px;"
+        onkeydown="if(event.key==='Enter')checkPass()">
+      <button onclick="checkPass()"
+        style="background:#8b1a1a;color:#fff;border:none;padding:11px 32px;border-radius:8px;font-size:13px;cursor:pointer;letter-spacing:.1em;">
+        Увійти
+      </button>
+      <div id="pass-err" style="color:#c0392b;font-size:12px;margin-top:12px;height:16px;"></div>
+    </div>`;
+  document.body.appendChild(screen);
+  setTimeout(() => { const i = document.getElementById('pass-input'); if(i) i.focus(); }, 80);
+  window.checkPass = function() {
+    const val = document.getElementById('pass-input').value;
+    if (val === PASS) {
+      sessionStorage.setItem(KEY, '1');
+      document.getElementById('pass-screen').remove();
+      initApp();
+    } else {
+      document.getElementById('pass-err').textContent = 'Невірний пароль';
+      document.getElementById('pass-input').value = '';
+      document.getElementById('pass-input').focus();
+    }
+  };
+})();</script>
 </body>
 </html>
