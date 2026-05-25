@@ -713,16 +713,22 @@ const SAVE_URL = 'https://script.google.com/macros/s/AKfycbzczjC5VjyrcOYeb-C1oMX
 let saveTimer = null;
 
 async function loadFromServer() {
-  // Skip server load when opening locally
   const isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   if (isLocal) return null;
   try {
     const r = await fetch(SAVE_URL + '?t=' + Date.now());
     const text = await r.text();
-    if (!text || text === 'null' || text === '') return null;
+    console.log('Server response length:', text ? text.length : 0);
+    if (!text || text === 'null' || text === '' || text.trim() === 'null') return null;
     const data = JSON.parse(text);
-    if (data && data[1] && data[2]) return data;
-    if (data && data.sp && data.d) return {1: data, 2: {sp: JSON.parse(JSON.stringify(RAW2.sp)), d: JSON.parse(JSON.stringify(RAW2.d))}};
+    // Validate structure strictly
+    const valid1 = data && data[1] && data[1].sp && Array.isArray(data[1].sp) && data[1].sp.length > 0;
+    const valid2 = data && data[2] && data[2].sp && Array.isArray(data[2].sp) && data[2].sp.length > 0;
+    if (valid1 && valid2) {
+      console.log('Loaded from server: week1 sp cols:', data[1].sp.length);
+      return data;
+    }
+    console.log('Server data invalid, using defaults');
   } catch(e) { console.log('Load error:', e); }
   return null;
 }
@@ -1000,24 +1006,39 @@ function switchShop(shop) {
 
 // ── INIT ──
 async function initApp() {
-  const saved = await loadFromServer();
-  if (saved) {
-    if (saved[1]) { state[1].sp = saved[1].sp; state[1].d = saved[1].d; }
-    if (saved[2]) { state[2].sp = saved[2].sp; state[2].d = saved[2].d; }
-  }
+  try {
+    const saved = await loadFromServer();
+    if (saved) {
+      if (saved[1] && saved[1].sp && saved[1].sp.length > 0) {
+        state[1].sp = saved[1].sp;
+        state[1].d = saved[1].d;
+      }
+      if (saved[2] && saved[2].sp && saved[2].sp.length > 0) {
+        state[2].sp = saved[2].sp;
+        state[2].d = saved[2].d;
+      }
+    }
+  } catch(e) { console.log('Init load error:', e); }
+  console.log('Rendering week', currentWeek, 'sp cols:', state[currentWeek]['sp'].length);
   renderAll('sp');
   renderAll('d');
-  // Auto-refresh from Google Sheets every 60 sec (when online)
+  updateProgress('sp');
+  updateProgress('d');
+  // Auto-refresh every 60 sec
   setInterval(async () => {
-    const fresh = await loadFromServer();
-    if (fresh) {
-      if (fresh[1]) { state[1].sp = fresh[1].sp; state[1].d = fresh[1].d; }
-      if (fresh[2]) { state[2].sp = fresh[2].sp; state[2].d = fresh[2].d; }
-      renderAll(currentShop === 'sp' ? 'sp' : 'd');
-      renderAll(currentShop === 'sp' ? 'd' : 'sp');
-      updateProgress('sp');
-      updateProgress('d');
-    }
+    try {
+      const fresh = await loadFromServer();
+      if (fresh) {
+        if (fresh[1] && fresh[1].sp && fresh[1].sp.length > 0) {
+          state[1].sp = fresh[1].sp; state[1].d = fresh[1].d;
+        }
+        if (fresh[2] && fresh[2].sp && fresh[2].sp.length > 0) {
+          state[2].sp = fresh[2].sp; state[2].d = fresh[2].d;
+        }
+        renderAll('sp'); renderAll('d');
+        updateProgress('sp'); updateProgress('d');
+      }
+    } catch(e) {}
   }, 60000);
 }
 
